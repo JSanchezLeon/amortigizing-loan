@@ -41,6 +41,25 @@ class AmortizingLoan():
             self.table["balance"].append(round(ending_balance,0))
 
         return self.table
+
+    def total_amortization(self):
+        """
+        Sums all the mortgage amortization. 
+        It should add to the total principal, but currently
+        the calculation is off
+        """
+        return sum(self.table["amortization"])
+
+    
+    def total_interest(self):
+        """
+        Returns the sum of all the interest paid over
+        the lifetime of the loan
+        """
+        return sum(self.table["interest"])
+    
+    def get_interest_as_proportion_principal(self):
+        return self.total_interest()/self.principal
     
     def get_max_interest(self):
         """
@@ -93,11 +112,14 @@ class AmortizingLoan():
                 self.table["amortization"][i]))
 
     
-m1 = AmortizingLoan(100000, 0.05, 30)
+m1 = AmortizingLoan(100000, 0.1/12, 360)
 
 m1.print_table()
 print(m1.get_closest_interest_amortization())
 print(m1.should_refinance(0.03,12,2466))
+print(m1.total_amortization())
+print(m1.total_interest())
+print(m1.get_interest_as_proportion_principal())
 
 
         
