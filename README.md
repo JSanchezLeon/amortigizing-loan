@@ -1,0 +1,1 @@
+The following code generates a class for an amortizing loan. The class includes several analytical functions to get access relevant information about the loan (e.g. duration) and outputs an amortization schedule.
