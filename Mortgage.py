@@ -101,6 +101,13 @@ class AmortizingLoan():
             return True
         else:
             return False
+    def get_duration(self,periods=1):
+        discounted_cashflow = [self.payment/(1+self.interest)**i for i in self.index]
+        discount_sum = sum(discounted_cashflow)
+        weight = [cf/discount_sum for cf in discounted_cashflow]
+        time_weight = [weight[i] * i for i in self.index]
+        return sum(time_weight)/periods
+
     
     def print_table(self):
         """Prints a nicely formatted table"""
@@ -120,6 +127,7 @@ print(m1.should_refinance(0.03,12,2466))
 print(m1.total_amortization())
 print(m1.total_interest())
 print(m1.get_interest_as_proportion_principal())
+print(m1.get_duration(12))
 
 
         
