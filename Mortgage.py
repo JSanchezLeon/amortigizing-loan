@@ -101,12 +101,22 @@ class AmortizingLoan():
             return True
         else:
             return False
-    def get_duration(self,periods=1):
+    def get_duration_dispersion_convexity(self,periods=1):
         discounted_cashflow = [self.payment/(1+self.interest)**i for i in self.index]
         discount_sum = sum(discounted_cashflow)
         weight = [cf/discount_sum for cf in discounted_cashflow]
         time_weight = [weight[i] * i for i in self.index]
-        return sum(time_weight)/periods
+        sum_time_weight = sum(time_weight)
+        dispersion_array = [((i - sum_time_weight)**2)*weight[i] for i in self.index]
+        dispersion_statistic = sum(dispersion_array)
+        cashflow_yield = np.irr([-self.principal] + [self.payment] * self.maturity)
+        convexity_array = [i * (i+1) * weight[i] for i in self.index]
+        convexity_statistic = sum(convexity_array)/(1+cashflow_yield)**2
+        convexity = (sum_time_weight ** 2 + sum_time_weight + dispersion_statistic)/(1+cashflow_yield)**2
+        
+        return {"duration":sum_time_weight/periods,\
+            "dispersion":dispersion_statistic/periods,\
+                "convexity":convexity_statistic/periods}
 
     
     def print_table(self):
@@ -119,7 +129,7 @@ class AmortizingLoan():
                 self.table["amortization"][i]))
 
     
-m1 = AmortizingLoan(100000, 0.1/12, 360)
+m1 = AmortizingLoan(100000, 0.01, 10)
 
 m1.print_table()
 print(m1.get_closest_interest_amortization())
@@ -127,7 +137,7 @@ print(m1.should_refinance(0.03,12,2466))
 print(m1.total_amortization())
 print(m1.total_interest())
 print(m1.get_interest_as_proportion_principal())
-print(m1.get_duration(12))
+print(m1.get_duration_dispersion_convexity())
 
 
         
