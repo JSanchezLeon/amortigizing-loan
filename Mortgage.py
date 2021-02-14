@@ -101,16 +101,21 @@ class AmortizingLoan():
             return True
         else:
             return False
-    def get_duration_dispersion_convexity(self,periods=1):
-        discounted_cashflow = [self.payment/(1+self.interest)**i for i in self.index]
+            
+    def get_duration_dispersion_convexity(self,periods=1, current_period = 0):
+        """
+        Computes duration and convexity using loan cashfloaws.
+        At the moment this is not accounting for prepayments
+        """ 
+        discounted_cashflow = [self.payment/(1+self.interest)**i for i in self.index[current_period:]]
         discount_sum = sum(discounted_cashflow)
         weight = [cf/discount_sum for cf in discounted_cashflow]
-        time_weight = [weight[i] * i for i in self.index]
+        time_weight = [weight[i] * i for i in range(1,len(weight))]
         sum_time_weight = sum(time_weight)
-        dispersion_array = [((i - sum_time_weight)**2)*weight[i] for i in self.index]
+        dispersion_array = [((i - sum_time_weight)**2)*weight[i] for i in range(1,len(weight))]
         dispersion_statistic = sum(dispersion_array)
-        cashflow_yield = np.irr([-self.principal] + [self.payment] * self.maturity)
-        convexity_array = [i * (i+1) * weight[i] for i in self.index]
+        cashflow_yield = np.irr([-self.table["balance"][current_period]] + [self.payment] * (self.maturity - current_period))
+        convexity_array = [i * (i+1) * weight[i] for i in range(1,len(weight))]
         convexity_statistic = sum(convexity_array)/(1+cashflow_yield)**2
         convexity = (sum_time_weight ** 2 + sum_time_weight + dispersion_statistic)/(1+cashflow_yield)**2
         
@@ -129,15 +134,15 @@ class AmortizingLoan():
                 self.table["amortization"][i]))
 
     
-m1 = AmortizingLoan(100000, 0.01, 10)
+m1 = AmortizingLoan(1000000, 0.1/12, 360)
 
 m1.print_table()
 print(m1.get_closest_interest_amortization())
-print(m1.should_refinance(0.03,12,2466))
+print(m1.should_refinance(0.03/12,24,2466))
 print(m1.total_amortization())
 print(m1.total_interest())
 print(m1.get_interest_as_proportion_principal())
-print(m1.get_duration_dispersion_convexity())
+print(m1.get_duration_dispersion_convexity(periods=12,current_period = 180))
 
 
         
