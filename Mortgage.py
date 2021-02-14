@@ -104,7 +104,7 @@ class AmortizingLoan():
             
     def get_duration_dispersion_convexity(self,periods=1, current_period = 0):
         """
-        Computes duration and convexity using loan cashfloaws.
+        Computes duration and convexity using loan cashflows.
         At the moment this is not accounting for prepayments
         """ 
         discounted_cashflow = [self.payment/(1+self.interest)**i for i in self.index[current_period:]]
