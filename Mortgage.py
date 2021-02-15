@@ -1,8 +1,9 @@
 import numpy as np 
 
 class AmortizingLoan():
-    def __init__(self, principal, interest, maturity):
+    def __init__(self, asset_price, principal, interest, maturity):
 
+        self.asset_price = asset_price
         self.principal = principal
         self.interest = interest
         self.maturity = maturity
@@ -18,6 +19,9 @@ class AmortizingLoan():
         for n in self.index[1:]:
             sum_factor += 1/(1+self.interest)**n
         return self.principal/sum_factor
+    
+    def get_LTV(self):
+        return self.principal/self.asset_price
     
     def generate_amortization_table(self):
         """
@@ -133,8 +137,12 @@ class AmortizingLoan():
                 ,self.table["payment"][i],self.table["interest"][i],\
                 self.table["amortization"][i]))
 
-    
-m1 = AmortizingLoan(1000000, 0.1/12, 360)
+
+asset_price = 345000
+loan = 325000
+rate = 0.1/12
+maturity = 12*30
+m1 = AmortizingLoan(asset_price,loan, rate, maturity)
 
 m1.print_table()
 print(m1.get_closest_interest_amortization())
@@ -143,6 +151,7 @@ print(m1.total_amortization())
 print(m1.total_interest())
 print(m1.get_interest_as_proportion_principal())
 print(m1.get_duration_dispersion_convexity(periods=12,current_period = 180))
+print(m1.get_LTV())
 
 
         
