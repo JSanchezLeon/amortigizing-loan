@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
     Create prototype for ABS class that uses AmortizingLoan class
     -NOT CURRENTLY WORKING, THE CLASS BELOW IS STILL IN DEVELOPMENT
